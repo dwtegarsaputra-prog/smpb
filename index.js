@@ -171,6 +171,9 @@ bot.on('message', (msg) => {
     if (teksInput.includes('kontak') || teksInput.includes('lokasi')) {
         return bot.sendMessage(chatId, KONTEN_BOT.grup, buatTombolBack(userAsliId));
     }
+    if (teksInput.includes('daftar') || teksInput.includes('pendaftaran')) {
+        return bot.sendMessage(chatId, KONTEN_BOT.jadwal, buatTombolBack(userAsliId));
+    }
 });
 
 // ==========================================
