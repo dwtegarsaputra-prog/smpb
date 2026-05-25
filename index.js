@@ -4,7 +4,7 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 // ==========================================
-// 1. KAMUS KONTEN INFORMASI RESMI
+// 1. KAMUS KONTEN INFORMASI RESMI (SUDAH DIKEMBALIKAN)
 // ==========================================
 const KONTEN_BOT = {
     salam: `🤖 *PUSAT INFORMASI SPMB SMKN 1 KUTASARI 2026/2027* 🤖\n\n` +
@@ -22,6 +22,22 @@ const KONTEN_BOT = {
             `   • Secara daring mulai 15 Juni (06.00 WIB)\n` +
             `   • Resmi ditutup: *18 Juni 2026 pukul 15.00 WIB*\n\n` +
             `🚀 *Awal Tahun Ajaran Baru*: *13 Juli 2026*`,
+
+    // --- TEKS ALUR PENDAFTARAN YANG SEMPAT HILANG SUDAH KEMBALI DI SINI ---
+    pendaftaran: `📝 *ALUR & CARA PENDAFTARAN SPMB SMKN 1 KUTASARI*:\n\n` +
+                 `1️⃣ *Persiapan Berkas*:\n` +
+                 `   • Siapkan scan KK, Akta, Rapor, dan Surat Keterangan Sehat.\n\n` +
+                 `2️⃣ *Pengajuan Akun (Online)*:\n` +
+                 `   • Akses situs resmi \`spmb.jatengprov.go.id\`.\n` +
+                 `   • Isi data diri dan unggah dokumen yang diminta.\n\n` +
+                 `3️⃣ *Verifikasi Fisik (Ke Sekolah)*:\n` +
+                 `   • Datang ke SMKN 1 Kutasari membawa berkas asli untuk verifikasi.\n` +
+                 `   • Terima Token Aktivasi dari panitia.\n\n` +
+                 `4️⃣ *Aktivasi Akun & Pilih Jurusan*:\n` +
+                 `   • Login kembali ke situs SPMB menggunakan token.\n` +
+                 `   • Pilih SMKN 1 Kutasari dan jurusan/kompetensi keahlian impianmu.\n\n` +
+                 `5️⃣ *Pantau Hasil Jurnal*:\n` +
+                 `   • Pantau peringkatmu secara real-time setiap hari di web seleksi.`,
             
     kuota: `📊 *SELEKSI & RINCIAN KUOTA PENERIMAAN (Total 468 Siswa)*:\n\n` +
            `🏆 *1. JALUR PRESTASI (Minimal 75% = 351 Siswa)*\n` +
@@ -75,6 +91,7 @@ function buatMenuUtama(userId) {
     return {
         reply_markup: {
             inline_keyboard: [
+                [{ text: '📝 Cara & Alur Pendaftaran', callback_data: `menu_pendaftaran_${userId}` }], // Diubah ke pendaftaran
                 [{ text: '📅 Jadwal Seleksi Resmi', callback_data: `menu_jadwal_${userId}` }],
                 [{ text: '📊 Persentase & Kuota', callback_data: `menu_kuota_${userId}` }],
                 [{ text: '🏫 Pilihan Jurusan/Prodi', callback_data: `menu_jurusan_${userId}` }],
@@ -156,6 +173,9 @@ bot.on('message', (msg) => {
     if (teksInput.includes('jadwal') || teksInput.includes('kapan')) {
         return bot.sendMessage(chatId, KONTEN_BOT.jadwal, buatTombolBack(userAsliId));
     }
+    if (teksInput.includes('daftar') || teksInput.includes('pendaftaran') || teksInput.includes('cara')) {
+        return bot.sendMessage(chatId, KONTEN_BOT.pendaftaran, buatTombolBack(userAsliId)); // Diarahkan ke pendaftaran asli
+    }
     if (teksInput.includes('jurusan') || teksInput.includes('prodi')) {
         return bot.sendMessage(chatId, KONTEN_BOT.jurusan, buatMenuJurusan(userAsliId));
     }
@@ -171,9 +191,6 @@ bot.on('message', (msg) => {
     if (teksInput.includes('kontak') || teksInput.includes('lokasi')) {
         return bot.sendMessage(chatId, KONTEN_BOT.grup, buatTombolBack(userAsliId));
     }
-    if (teksInput.includes('daftar') || teksInput.includes('pendaftaran')) {
-        return bot.sendMessage(chatId, KONTEN_BOT.jadwal, buatTombolBack(userAsliId));
-    }
 });
 
 // ==========================================
@@ -188,7 +205,7 @@ bot.on('callback_query', async (query) => {
 
     // Memecah data klik (Contoh: menu_jadwal_1234567)
     const bagianData = dataKlik.split('_');
-    const targetAksi = bagianData[0] + '_' + bagianData[1]; // Hasil: menu_jadwal, back_main, jur_tjkt
+    const targetAksi = bagianData[0] + '_' + bagianData[1]; 
     const pemanggilAsliId = bagianData[2];
 
     // Cek kecocokan ID di grup
@@ -204,6 +221,8 @@ bot.on('callback_query', async (query) => {
     try {
         if (targetAksi === 'back_main') {
             await bot.editMessageText(KONTEN_BOT.salam, { chat_id: chatId, message_id: messageId, ...buatMenuUtama(pemanggilAsliId) });
+        } else if (targetAksi === 'menu_pendaftaran') {
+            await bot.editMessageText(KONTEN_BOT.pendaftaran, { chat_id: chatId, message_id: messageId, ...buatTombolBack(pemanggilAsliId) });
         } else if (targetAksi === 'menu_jadwal') {
             await bot.editMessageText(KONTEN_BOT.jadwal, { chat_id: chatId, message_id: messageId, ...buatTombolBack(pemanggilAsliId) });
         } else if (targetAksi === 'menu_kuota') {
