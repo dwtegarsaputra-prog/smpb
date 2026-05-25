@@ -91,20 +91,34 @@ function buatMenuUtama(userId) {
     return {
         reply_markup: {
             inline_keyboard: [
-                [{ text: '📝 Cara & Alur Pendaftaran', callback_data: `menu_pendaftaran_${userId}` }], // Diubah ke pendaftaran
-                [{ text: '📅 Jadwal Seleksi Resmi', callback_data: `menu_jadwal_${userId}` }],
-                [{ text: '📊 Persentase & Kuota', callback_data: `menu_kuota_${userId}` }],
-                [{ text: '🏫 Pilihan Jurusan/Prodi', callback_data: `menu_jurusan_${userId}` }],
-                [{ text: '📑 Berkas Syarat & Biaya', callback_data: `menu_syarat_${userId}` }],
-                [{ text: '🏢 Fasilitas & Sapras Sekolah', callback_data: `menu_fasilitas_${userId}` }],
-                [{ text: '✨ Kegiatan & Ekstrakurikuler', callback_data: `menu_kegiatan_${userId}` }],
+                // Baris 1: Menu Utama Paling Penting (Satu baris penuh)
+                [{ text: '📝 Cara & Alur Pendaftaran', callback_data: `menu_pendaftaran_${userId}` }],
+                
+                // Baris 2: Informasi Waktu & Kuota (Digabung Berdampingan)
+                [
+                    { text: '📅 Jadwal Seleksi', callback_data: `menu_jadwal_${userId}` },
+                    { text: '📊 Kuota & Jalur', callback_data: `menu_kuota_${userId}` }
+                ],
+                
+                // Baris 3: Akademik & Administrasi (Digabung Berdampingan)
+                [
+                    { text: '🏫 Pilihan Jurusan', callback_data: `menu_jurusan_${userId}` },
+                    { text: '📑 Berkas & Syarat', callback_data: `menu_syarat_${userId}` }
+                ],
+                
+                // Baris 4: Seputar Lingkungan Sekolah (Digabung Berdampingan)
+                [
+                    { text: '🏢 Fasilitas Sekolah', callback_data: `menu_fasilitas_${userId}` },
+                    { text: '✨ Ekskul & Kegiatan', callback_data: `menu_kegiatan_${userId}` }
+                ],
+                
+                // Baris 5: Kontak Hubung (Satu baris penuh di bawah)
                 [{ text: '💬 Kontak & Lokasi Resmi', callback_data: `menu_grup_${userId}` }]
             ]
         },
         parse_mode: 'Markdown'
     };
 }
-
 function buatTombolBack(userId) {
     return {
         reply_markup: {
@@ -162,10 +176,10 @@ bot.on('message', (msg) => {
     }
 
     // Pemicu Menu Utama
-    if (teksInput === 'start' || teksInput === 'menu' || teksInput === 'halo') {
+    // Pemicu Menu Utama dengan berbagai variasi sapaan
+    if (teksInput === 'start' || teksInput === 'menu' || teksInput === 'halo' || teksInput === 'woi' || teksInput === 'p' || teksInput === 'hei' || teksInput === 'hi') {
         return bot.sendMessage(chatId, KONTEN_BOT.salam, buatMenuUtama(userAsliId));
     }
-
     // Deteksi Kata Kunci Langsung
     if (teksInput.includes('kuota') || teksInput.includes('jalur')) {
         return bot.sendMessage(chatId, KONTEN_BOT.kuota, buatTombolBack(userAsliId));
